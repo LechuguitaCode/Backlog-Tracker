@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model estado {
+  id_estado BigInt  @id @default(autoincrement())
+  estado    String
+  juego     juego[]
+}
+
+model juego {
+  id_juego      BigInt     @id @default(autoincrement())
+  nombre        String
+  horas_r       Decimal?   @db.Decimal(4, 0)
+  imagen        Bytes?
+  id_plataforma BigInt
+  id_estado     BigInt
+  estado        estado     @relation(fields: [id_estado], references: [id_estado], onDelete: NoAction, onUpdate: NoAction, map: "fk_estado_juegos")
+  plataforma    plataforma @relation(fields: [id_plataforma], references: [id_plataforma], onDelete: NoAction, onUpdate: NoAction, map: "fk_plataforma_juegos")
+  sesiones      sesiones[]
+}
+
+model plataforma {
+  id_plataforma BigInt  @id @default(autoincrement())
+  nombre_p      String
+  juego         juego[]
+}
+
+model sesiones {
+  id_sesion BigInt   @id @default(autoincrement())
+  id_juego  BigInt
+  fecha     DateTime @db.Date
+  duracion  Decimal  @db.Decimal(2, 1)
+  logros    BigInt
+  juego     juego    @relation(fields: [id_juego], references: [id_juego], onDelete: Cascade, map: "fk_juegos_sesiones")
+}
